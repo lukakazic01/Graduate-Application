@@ -1,8 +1,8 @@
 require("dotenv").config({path: '../.env'});
 const express = require('express')
+const { createPool } = require('mysql');
 const app = express();
 const port = 3000;
-const {createPool} = require('mysql');
 const jwt = require('jsonwebtoken');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -11,7 +11,7 @@ const SESSION_DURATION = 14 * 24 * 60 * 60 // 14 days in seconds
 const pool = createPool({
     user: process.env.USER,
     host: process.env.HOST,
-    password: '',
+    password: process.env.PASSWORD,
     database: process.env.DATABASE
 
 });
@@ -26,9 +26,6 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
     pool.query('select * from patika',
         (err,result) => {
-            if(err)
-                console.log(err)
-
             res.send({result});
         })
 })
