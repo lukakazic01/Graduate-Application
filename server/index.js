@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({path: '../.env'});
 const express = require('express')
 const app = express();
 const port = 3000;
@@ -9,10 +9,10 @@ app.use(express.urlencoded({ extended: true }));
 const SESSION_DURATION = 14 * 24 * 60 * 60 // 14 days in seconds
 
 const pool = createPool({
-    user: 'root',
-    host: 'localhost',
+    user: process.env.VUE_APP_USER,
+    host: process.env.HOST,
     password: '',
-    database: 'bazazaprojekat'
+    database: process.env.DATABASE
 
 });
 app.use((req, res, next) => {
