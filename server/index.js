@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 const SESSION_DURATION = 14 * 24 * 60 * 60 // 14 days in seconds
 
 const pool = createPool({
-    user: process.env.VUE_APP_USER,
+    user: process.env.USER,
     host: process.env.HOST,
     password: '',
     database: process.env.DATABASE
@@ -60,7 +60,7 @@ app.post('/login', (req, res) => {
                 const token = jwt.sign({
                     username,
                     exp: Math.floor(Date.now() / 1000) + SESSION_DURATION
-                }, `${process.env.VUE_APP_TOKEN_SECRET}`)
+                }, `${process.env.TOKEN_SECRET}`)
                 res.cookie('token', token)
                 res.send({username});
             } catch(err) {
