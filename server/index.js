@@ -1,6 +1,6 @@
 require("dotenv").config({path: '../.env'});
 const express = require('express')
-const { createPool } = require('mysql');
+const { createPool } = require('mysql-await');
 const app = express();
 const port = 3000;
 const jwt = require('jsonwebtoken');
@@ -13,19 +13,22 @@ const pool = createPool({
     host: process.env.HOST,
     password: process.env.PASSWORD,
     database: process.env.DATABASE
-
 });
+
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', req.headers.origin);
-    res.header("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
     res.header('Access-Control-Allow-Credentials', true);
     res.header('Access-Control-Allow-Methods', '*');
     next();
 });
 
+let allSneakers = null;
+
 app.get('/', (req, res) => {
     pool.query('select * from patika',
         (err,result) => {
+            allSneakers = result;
             res.send({result});
         })
 })
@@ -49,8 +52,8 @@ app.post('/register', (req, res) => {
 
 app.post('/login', (req, res) => {
     const {username, password} = req.body
-    pool.query('select email from kupac where email = ? and sifra = ?', [username, password], (err, result) => {
-        if(result.length < 0) {
+    pool.query('select * from kupac where email = ? and sifra = ?', [username, password], (err, result) => {
+        if(result.length === 0) {
             res.status(404).send('Wrong username or password')
         } else {
             try {
@@ -58,7 +61,7 @@ app.post('/login', (req, res) => {
                     username,
                     exp: Math.floor(Date.now() / 1000) + SESSION_DURATION
                 }, `${process.env.TOKEN_SECRET}`)
-                res.cookie('token', token)
+                res.setHeader('Set-Cookie', `token=${token}; Max-Age=600`)
                 res.send({username});
             } catch(err) {
                 console.log(err)
@@ -79,6 +82,8 @@ app.get('/search', (req, res) => {
         }
     })
 })
+
+
 
 app.delete('/delete', (req, res) => {
     const {id} = req.query
@@ -112,6 +117,38 @@ app.post('/addSneakers', (req, res) => {
             })
         }
     })
+})
+
+app.get('/filters', async (req, res) => {
+    const filters = req.query.filters;
+    if (!filters) return res.send(allSneakers);
+    const brands = filters.filter(filter => filter.brands);
+    const price = filters.filter(filter => filter.cena);
+    let finalResult = []
+    if (brands.length !== 0) {
+        for (let key of brands[0].brands) {
+            const result = await pool.awaitQuery('select * from patika where brend =  ?', [key])
+            finalResult = [...finalResult, ...result]
+        }
+    }
+
+
+    if (price.length !== 0) {
+        const [min, max] = price[0].cena.split('-');
+        if (finalResult.length === 0) {
+            const result = await pool.awaitQuery('select * from patika where _cena between ? and ?', [min, max]);
+            finalResult = [...finalResult, ...result]
+        } else {
+            finalResult = finalResult.filter(brand => brand._CENA >= min && brand._CENA <= max);
+        }
+    }
+
+
+    if (finalResult.length === 0) {
+        res.send(allSneakers)
+    } else {
+        res.send(finalResult)
+    }
 })
 
 app.listen(port, () => {

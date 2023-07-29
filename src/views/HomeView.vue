@@ -3,6 +3,7 @@
     <input type="text" placeholder="pretrazi patike" @input="getSearchedValues()" v-model="searchedValue">
       <button class="btn btn-primary ms-5" @click="openModal()">Dodaj nove patike</button>
   </div>
+  <Filters @filters="handleFilters"/>
   <div class="row justify-content-center w-100">
       <div class="col-8">
         <table class="table mt-5 table-hover">
@@ -41,11 +42,14 @@ import { ref } from "vue";
 import router from "@/router";
 import Modal from "@/components/AddSneakersModal.vue";
 import {useCartStore} from "../../store/cart";
+import Filters from "@/components/Filters.vue";
+import {useRoute} from "vue-router";
 const allSneakers = ref([]);
 const searchedValue = ref('');
 const timeout = ref(null);
 const isModalOpened = ref(false);
 const cartStore = useCartStore();
+const route = useRoute();
 (async() => {
     try {
       const {data} = await axios.get('http://localhost:3000/')
@@ -56,6 +60,7 @@ const cartStore = useCartStore();
 })()
 
 const getSearchedValues = async () => {
+    const {data} = await axios.get('http://localhost:3000/')
    if(timeout.value) {
        clearTimeout(timeout.value)
    }
@@ -95,6 +100,31 @@ function updateTable (data) {
 
 const addToCart = (sneaker) => {
     cartStore.setShoppingCart(sneaker);
+}
+
+const handleFilters = async (filters) => {
+  await handleQueryParams(filters)
+  const {data: filtered} = await axios.get('http://localhost:3000/filters', {params: {
+      filters
+   }});
+  allSneakers.value = filtered
+}
+
+const handleQueryParams = async (filters) => {
+    const doesBrandsExist = filters.some(filter => filter.brands);
+    const doesPriceExist = filters.some(filter => filter.cena);
+    if (filters.length === 0) {
+        return await router.push('');
+    }
+    if (doesBrandsExist || doesPriceExist) {
+        const brands = filters.filter(filter => filter.brands);
+        const price = filters.find(filter => filter.cena)
+        await router.push({path: '', query: {
+                brend: brands[0]?.brands.join(','),
+                cena: price?.cena
+        }})
+    }
+
 }
 </script>
 <style>
