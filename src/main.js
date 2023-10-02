@@ -1,6 +1,6 @@
-import './assets/main.css'
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
+import './assets/main.css'
 import 'vue-toast-notification/dist/theme-sugar.css';
 import App from './App.vue'
 import VueCookies from 'vue-cookies';
@@ -26,6 +26,7 @@ router.beforeEach((to, from) => {
         try {
             const decoded = jwtDecode(token)
             store.setUsername(decoded.username)
+            store.setRole(decoded.role)
         } catch (err) {
             //
         }

@@ -1,15 +1,13 @@
 <template>
     <div class="d-flex flex-column align-items-center">
         <h4 class="mb-3 mt-3">Login</h4>
-        <div class="row mb-3 form-wrapper">
-            <label class="col-3">Username:</label>
-            <input type="text" class="col-9" v-model="username">
+        <div class=" mb-3 form-wrapper">
+            <label>Username:</label>
+            <input type="text" class="w-100" v-model="username" placeholder="Ukucajte username">
+            <label class="mt-2">Password:</label>
+            <input type="text" class="w-100" v-model="password" placeholder="Ukucajte sifru">
+        <button class="btn btn-danger mt-3 text-white" @click="login()">Submit</button>
         </div>
-        <div class="row form-wrapper">
-            <label class="col-3">Password:</label>
-            <input type="text" class="col-9" v-model="password">
-        </div>
-        <button class="btn btn-danger mt-5 text-white" @click="login()">Submit</button>
     </div>
 </template>
 
@@ -47,6 +45,16 @@ const login = async () => {
 
 <style scoped>
 .form-wrapper {
-    width: 350px
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+}
+input {
+    outline: none;
+    padding: 5px;
+}
+
+input:focus{
+    border: 2px solid crimson
 }
 </style>
