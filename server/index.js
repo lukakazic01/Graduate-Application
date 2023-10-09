@@ -4,8 +4,11 @@ const { createPool } = require('mysql-await');
 const app = express();
 const port = 3000;
 const jwt = require('jsonwebtoken');
-app.use(express.json());
+const sharp = require('sharp')
+const path = require('path');
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use("/images", express.static("../public"));
 const SESSION_DURATION = 14 * 24 * 60 * 60 // 14 days in seconds
 
 const pool = createPool({
@@ -108,17 +111,31 @@ app.get('/sneaker', (req,res) => {
 })
 
 app.post('/addSneakers', (req, res) => {
-    const {cena, model, brend, brojPatika} = req.body;
-    pool.query('insert into patike values(default, ?, ?, ?, ?)', [brojPatika, model, brend, cena] , (err, result) => {
-        if (err) {
-            res.status(406).send('You must provide valid information')
-        } else {
-            pool.query('select * from patike', (err, result) => {
-                res.send(result);
-            })
-        }
-    })
-})
+    const { cena, model, brend, brojPatika, name, buffer } = req.body;
+    const modifiedBuffer = buffer.split(';base64,').pop()
+    const outputPath = path.join(__dirname, '../public', 'resized_' + name);
+    const imageBuffer = Buffer.from(modifiedBuffer, "base64")
+    sharp(imageBuffer)
+        .resize(500, 281, {
+            withoutEnlargement: true
+        })
+        .toFile(outputPath, (err, info) => {
+            if (err) {
+                return res.status(406).send(err.message);
+            } else {
+                const modifiedFilename = `http://localhost:3000/images/resized_${name}`;
+                pool.query('insert into patike values(default, ?, ?, ?, ?, ?)', [brojPatika, model, brend, cena, modifiedFilename], (err, result) => {
+                    if (err) {
+                        res.status(406).send(err.message);
+                    } else {
+                        pool.query('select * from patike', (err, result) => {
+                            res.send(result);
+                        });
+                    }
+                });
+            }
+        });
+});
 
 app.get('/filters', async (req, res) => {
     const filters = req.query.filters;
@@ -173,6 +190,7 @@ app.post('/answer', async (req, res) => {
         })
     })
 })
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })

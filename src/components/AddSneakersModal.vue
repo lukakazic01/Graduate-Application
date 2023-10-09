@@ -9,24 +9,28 @@
                 <div class="modal-body">
                     <div class="row mb-3">
                         <label class="col-3">brend:</label>
-                        <input type="text" class="col-9" v-model="brend"/>
+                        <input type="text" class="col-9" v-model="brend" name="brend"/>
                     </div>
                     <div class="row mb-3">
                         <label class="col-3">cena:</label>
-                        <input type="text" class="col-9" v-model="cena"/>
+                        <input type="text" class="col-9" v-model="cena" name="cena"/>
                     </div>
                     <div class="row mb-3">
                         <label class="col-3">broj patika:</label>
-                        <input type="text" class="col-9" v-model="brojPatika"/>
+                        <input type="text" class="col-9" v-model="brojPatika" name="brojPatika"/>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-3">model:</label>
+                        <input type="text" class="col-9" v-model="model" name="model"/>
                     </div>
                     <div class="row">
-                        <label class="col-3">model:</label>
-                        <input type="text" class="col-9" v-model="model"/>
+                        <label class="col-3">slika:</label>
+                        <input type="file" class="col-9" name="image" ref="image" />
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @click="closeModal()">Zatvori</button>
-                    <button type="button" class="btn btn-primary" @click="saveSneakers()">Sacuvaj</button>
+                    <button type="submit" class="btn btn-primary" @click="saveSneakers()">Sacuvaj</button>
                 </div>
             </div>
         </div>
@@ -41,7 +45,9 @@ const cena = ref(null);
 const brend = ref('');
 const model = ref('');
 const brojPatika = ref(null);
+const image = ref(null);
 const $toast = useToast();
+let formData = new FormData();
 const props = defineProps({isModalOpened: Boolean})
 const emit = defineEmits(['closeModal', 'addNewSneakers']);
 const closeModal = () => {
@@ -50,11 +56,14 @@ const closeModal = () => {
 
 const saveSneakers = async () => {
     try{
+        const { name, buffer } = await handleFile()
         const {data} = await axios.post('http://localhost:3000/addSneakers', {
             cena: cena.value,
             brojPatika: brojPatika.value,
             model: model.value,
-            brend: brend.value
+            brend: brend.value,
+            buffer: buffer,
+            name: name
         })
         emit('addNewSneakers', data)
         emit('closeModal', false)
@@ -66,6 +75,20 @@ const saveSneakers = async () => {
             position: "bottom"
         })
     }
+}
+
+const handleFile = () => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(image.value.files[0]);
+        reader.onload = () => {
+            const data = {
+                name: image.value.files[0].name,
+                buffer: reader.result
+            }
+            resolve(data)
+        }
+})
 }
 </script>
 

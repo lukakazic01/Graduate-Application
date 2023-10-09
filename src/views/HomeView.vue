@@ -4,32 +4,22 @@
       <button class="btn btn-primary ms-5" @click="openModal()">Dodaj nove patike</button>
   </div>
   <Filters @filters="handleFilters"/>
-  <div class="row justify-content-center w-100">
-      <div class="col-8">
-        <table class="table mt-5 table-hover">
-            <thead class="table-dark">
-            <tr>
-                <th scope="col">id</th>
-                <th scope="col">brend</th>
-                <th scope="col">model</th>
-                <th scope="col">broj patike</th>
-                <th scope="col">cena</th>
-                <th scope="col">dodaj u korpu</th>
-                <th scope="col">obrisi</th>
-            </tr>
-            </thead>
-            <tbody>
-              <tr v-for="sneaker in allSneakers" @click="showSneakersInDetail(sneaker.ID_PATIKA)" class="hover">
-                  <td>{{sneaker.ID_PATIKA}}</td>
-                  <td>{{sneaker.BREND}}</td>
-                  <td>{{sneaker.MODEL}}</td>
-                  <td>{{sneaker.BROJ_PATIKA}}</td>
-                  <td>{{sneaker._CENA}}</td>
-                  <td><button class="btn btn-success text-white" @click.stop="addToCart(sneaker)">Dodaj u korpu</button></td>
-                  <td><button class="btn btn-danger text-white" @click.stop="deleteSneaker(sneaker.ID_PATIKA)">obrisi</button></td>
-              </tr>
-            </tbody>
-        </table>
+  <div class="row">
+      <div class=" mt-4 d-flex w-100 flex-wrap gap-4 justify-content-center">
+          <div class="card hover card-container" v-for="sneaker in allSneakers" @click="showSneakersInDetail(sneaker.ID_PATIKA)">
+              <div class="card-wrapper card-img-top">
+                <img :src="sneaker.slika" class="img-card" alt="slika" />
+              </div>
+              <div class="card-body">
+                  <h5 class="card-title">{{sneaker.BREND}} {{sneaker.MODEL}}</h5>
+                  <p>Broj: {{sneaker.BROJ_PATIKA}}</p>
+                  <p>Cena: {{sneaker._CENA}} RSD</p>
+                  <div class="mt-3">
+                    <button class="btn btn-success text-white me-3" @click.stop="addToCart(sneaker)">Dodaj u korpu</button>
+                    <button class="btn btn-danger text-white" @click.stop="deleteSneaker(sneaker.ID_PATIKA)">obrisi</button>
+                  </div>
+              </div>
+          </div>
       </div>
   </div>
   <Modal :isModalOpened="isModalOpened"
@@ -130,5 +120,18 @@ const handleQueryParams = async (filters) => {
 <style>
 .hover:hover {
     cursor: pointer;
+}
+.card-container {
+    width: calc(33.33333% - 1.5rem);
+}
+.img-card {
+    max-width: 100%;
+    width: auto;
+}
+.card-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0,0,0);
 }
 </style>
