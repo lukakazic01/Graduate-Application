@@ -163,7 +163,6 @@ app.get('/filters', async (req, res) => {
         }
     }
 
-
     if (price.length !== 0) {
         const [min, max] = price[0].cena.split('-');
         if (finalResult.length === 0) {
@@ -214,6 +213,20 @@ app.post('/updateAmount', (req, res) => {
                 res.send(result)
             })
         }
+    })
+})
+
+app.post('/buy', async (req, res) => {
+    const { items } = req.body
+    for (let item of items) {
+         await pool.awaitQuery('update patike set kolicina = kolicina - 1 where ID_PATIKA = ?', [item.ID_PATIKA], (err, result) => {
+            if (err) {
+                res.status(406, err.message);
+            }
+        })
+    }
+    pool.query('select * from patike', (err, result) => {
+        res.send(result)
     })
 })
 
