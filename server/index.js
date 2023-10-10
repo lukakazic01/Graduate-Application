@@ -90,17 +90,30 @@ app.get('/search', (req, res) => {
 
 
 app.delete('/delete', (req, res) => {
-    const {id} = req.query
-    pool.query('delete from patike where ID_PATIKA = ?',[id], (err, result) =>{
-      if(err) {
-          res.status(500).send('Not deleted')
-      } else {
-          pool.query('select * from patike', (err, result) => {
-              res.send(result)
-          })
-      }
+    const {id, novaKolicina} = req.query
+    pool.query('select kolicina from patike where ID_PATIKA = ?', [id], (err, result) => {
+        if(result[0].kolicina == novaKolicina) {
+            pool.query('delete from patike where ID_PATIKA = ?', [id], (err, result) =>{
+                if(err) {
+                    res.status(500).send('Not deleted')
+                } else {
+                    pool.query('select * from patike', (err, result) => {
+                        res.send(result)
+                    })
+                }
+            })
+        } else {
+            pool.query('update patike set kolicina = kolicina - ?  where ID_PATIKA = ?',[novaKolicina, id], (err, result) => {
+                if(err) {
+                    res.status(500).send(err.message)
+                } else {
+                    pool.query('select * from patike', (err, result) => {
+                        res.send(result)
+                    })
+                }
+            })
+        }
     })
-
 })
 
 app.get('/sneaker', (req,res) => {
@@ -111,7 +124,7 @@ app.get('/sneaker', (req,res) => {
 })
 
 app.post('/addSneakers', (req, res) => {
-    const { cena, model, brend, brojPatika, name, buffer } = req.body;
+    const { cena, model, brend, brojPatika, name, buffer, kolicina } = req.body;
     const modifiedBuffer = buffer.split(';base64,').pop()
     const outputPath = path.join(__dirname, '../public', 'resized_' + name);
     const imageBuffer = Buffer.from(modifiedBuffer, "base64")
@@ -124,7 +137,7 @@ app.post('/addSneakers', (req, res) => {
                 return res.status(406).send(err.message);
             } else {
                 const modifiedFilename = `http://localhost:3000/images/resized_${name}`;
-                pool.query('insert into patike values(default, ?, ?, ?, ?, ?)', [brojPatika, model, brend, cena, modifiedFilename], (err, result) => {
+                pool.query('insert into patike values(default, ?, ?, ?, ?, ?, ?)', [brojPatika, model, brend, cena, modifiedFilename, kolicina], (err, result) => {
                     if (err) {
                         res.status(406).send(err.message);
                     } else {
@@ -188,6 +201,19 @@ app.post('/answer', async (req, res) => {
         pool.query('select * from q_a', (err, result) => {
             res.send(result)
         })
+    })
+})
+
+app.post('/updateAmount', (req, res) => {
+    const { id, kolicinaZaDodati } = req.body;
+    pool.query('update patike set kolicina = kolicina + ?  where ID_PATIKA = ?',[kolicinaZaDodati, id], (err, result) => {
+        if(err) {
+            res.status(500).send(err.message)
+        } else {
+            pool.query('select * from patike', (err, result) => {
+                res.send(result)
+            })
+        }
     })
 })
 

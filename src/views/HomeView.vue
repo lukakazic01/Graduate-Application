@@ -14,31 +14,45 @@
                   <h5 class="card-title">{{sneaker.BREND}} {{sneaker.MODEL}}</h5>
                   <p>Broj: {{sneaker.BROJ_PATIKA}}</p>
                   <p>Cena: {{sneaker._CENA}} RSD</p>
+                  <p>Kolicina: {{sneaker.kolicina}}</p>
                   <div class="mt-3">
                     <button class="btn btn-success text-white me-3" @click.stop="addToCart(sneaker)">Dodaj u korpu</button>
-                    <button class="btn btn-danger text-white" @click.stop="deleteSneaker(sneaker.ID_PATIKA)">obrisi</button>
+                    <button class="btn btn-success text-white me-3" @click.stop="openIncreaseSneakersAmountModal(sneaker)">Dodaj kolicinu</button>
+                    <button class="btn btn-danger text-white" @click.stop="openDeleteSneakersModal(sneaker)">Obrisi</button>
                   </div>
               </div>
           </div>
       </div>
   </div>
-  <Modal :isModalOpened="isModalOpened"
+  <AddSneakersModal :isAddSneakersModalOpened="isAddSneakersModalOpened"
           @close-modal="closeModal"
-          @add-new-sneakers="updateTable"></Modal>
+          @add-new-sneakers="updateCards"></AddSneakersModal>
+  <DeleteSneakersModal :isDeleteSneakersModalOpened="isDeleteSneakersModalOpened"
+                        @close-modal="closeDeleteSneakersModal()"
+                        @update-sneakers="updateCards"/>
+  <IncreaseSneakersAmountModal :is-increase-sneakers-amount-modal-opened="isIncreaseSneakersAmountModalOpened"
+                                @close-modal="closeIncreaseSneakersAmountModal"
+                                @update-sneakers="updateCards"/>
 </template>
 <script setup>
 import axios from 'axios'
 import { ref } from "vue";
 import router from "@/router";
-import Modal from "@/components/AddSneakersModal.vue";
 import {useCartStore} from "../../store/cart";
 import Filters from "@/components/Filters.vue";
 import {useRoute} from "vue-router";
+import AddSneakersModal from "@/components/AddSneakersModal.vue";
+import DeleteSneakersModal from "@/components/DeleteSneakersModal.vue";
+import {useSneakerStore} from "../../store/sneaker";
+import IncreaseSneakersAmountModal from "@/components/IncreaseSneakersAmountModal.vue";
 const allSneakers = ref([]);
 const searchedValue = ref('');
 const timeout = ref(null);
-const isModalOpened = ref(false);
+const isAddSneakersModalOpened = ref(false);
+const isDeleteSneakersModalOpened = ref(false)
+const isIncreaseSneakersAmountModalOpened = ref(false);
 const cartStore = useCartStore();
+const sneakerStore = useSneakerStore();
 const route = useRoute();
 (async() => {
     try {
@@ -50,26 +64,16 @@ const route = useRoute();
 })()
 
 const getSearchedValues = async () => {
-    const {data} = await axios.get('http://localhost:3000/')
-   if(timeout.value) {
-       clearTimeout(timeout.value)
-   }
-   timeout.value = setTimeout(() => {
-        axios.get('http://localhost:3000/search', {params: {
-               searched: searchedValue.value
-        }})
-        .then(res => {allSneakers.value = res.data})
-        .catch(err => console.log(err));
-   }, 400)
-}
-
-const deleteSneaker = async (id) => {
-    try{
-      const {data} = await axios.delete('http://localhost:3000/delete', {params: {id}})
-      allSneakers.value = data
-    } catch(err) {
-
-    }
+     if(timeout.value) {
+         clearTimeout(timeout.value)
+     }
+     timeout.value = setTimeout(() => {
+          axios.get('http://localhost:3000/search', {params: {
+                 searched: searchedValue.value
+          }})
+          .then(res => {allSneakers.value = res.data})
+          .catch(err => console.log(err));
+     }, 400)
 }
 
 const showSneakersInDetail = async (id) => {
@@ -77,15 +81,33 @@ const showSneakersInDetail = async (id) => {
 }
 
 const openModal = () => {
-    isModalOpened.value = true
+    isAddSneakersModalOpened.value = true
 }
 
 function closeModal (value) {
-    isModalOpened.value = value;
+    isAddSneakersModalOpened.value = value;
 }
 
-function updateTable (data) {
+function updateCards (data) {
     allSneakers.value = data
+}
+
+const openDeleteSneakersModal = (sneaker) => {
+    sneakerStore.setSneaker(sneaker)
+    isDeleteSneakersModalOpened.value = true;
+}
+
+const openIncreaseSneakersAmountModal = (sneaker) => {
+    sneakerStore.setSneaker(sneaker)
+    isIncreaseSneakersAmountModalOpened.value = true;
+}
+
+const closeDeleteSneakersModal = () => {
+    isDeleteSneakersModalOpened.value = false
+}
+
+const closeIncreaseSneakersAmountModal = () => {
+    isIncreaseSneakersAmountModalOpened.value = false;
 }
 
 const addToCart = (sneaker) => {

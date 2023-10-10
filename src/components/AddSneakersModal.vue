@@ -1,5 +1,5 @@
 <template>
-    <div class="modal modal-overriden" v-if="props.isModalOpened">
+    <div class="modal modal-overriden" v-if="props.isAddSneakersModalOpened">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -23,9 +23,13 @@
                         <label class="col-3">model:</label>
                         <input type="text" class="col-9" v-model="model" name="model"/>
                     </div>
-                    <div class="row">
+                    <div class="row mb-3">
                         <label class="col-3">slika:</label>
                         <input type="file" class="col-9" name="image" ref="image" />
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-3">kolicina:</label>
+                        <input type="number" class="col-9" name="kolicina" min="1" v-model="kolicina"/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -46,9 +50,9 @@ const brend = ref('');
 const model = ref('');
 const brojPatika = ref(null);
 const image = ref(null);
+const kolicina = ref(null);
 const $toast = useToast();
-let formData = new FormData();
-const props = defineProps({isModalOpened: Boolean})
+const props = defineProps({isAddSneakersModalOpened: Boolean})
 const emit = defineEmits(['closeModal', 'addNewSneakers']);
 const closeModal = () => {
   emit('closeModal', false);
@@ -63,7 +67,8 @@ const saveSneakers = async () => {
             model: model.value,
             brend: brend.value,
             buffer: buffer,
-            name: name
+            name: name,
+            kolicina: kolicina.value
         })
         emit('addNewSneakers', data)
         emit('closeModal', false)
