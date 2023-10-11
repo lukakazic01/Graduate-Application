@@ -16,7 +16,7 @@
                   <p>Cena: {{sneaker._CENA}} RSD</p>
                   <p>Kolicina: {{sneaker.kolicina}}</p>
                   <div class="mt-3">
-                    <button class="btn btn-success text-white me-3" @click.stop="addToCart(sneaker)">Dodaj u korpu</button>
+                    <button class="btn btn-success text-white me-3" @click.stop="addToCart(sneaker)" :disabled="sneaker.doesAmountExceeds">Dodaj u korpu</button>
                     <button class="btn btn-success text-white me-3" @click.stop="openIncreaseSneakersAmountModal(sneaker)">Dodaj kolicinu</button>
                     <button class="btn btn-danger text-white" @click.stop="openDeleteSneakersModal(sneaker)">Obrisi</button>
                   </div>
@@ -36,7 +36,7 @@
 </template>
 <script setup>
 import axios from 'axios'
-import { ref } from "vue";
+import {ref, watch} from "vue";
 import router from "@/router";
 import {useCartStore} from "../../store/cart";
 import Filters from "@/components/Filters.vue";
@@ -45,6 +45,7 @@ import AddSneakersModal from "@/components/AddSneakersModal.vue";
 import DeleteSneakersModal from "@/components/DeleteSneakersModal.vue";
 import {useSneakerStore} from "../../store/sneaker";
 import IncreaseSneakersAmountModal from "@/components/IncreaseSneakersAmountModal.vue";
+const props = defineProps(['allSneakers'])
 const allSneakers = ref([]);
 const searchedValue = ref('');
 const timeout = ref(null);
@@ -53,11 +54,13 @@ const isDeleteSneakersModalOpened = ref(false)
 const isIncreaseSneakersAmountModalOpened = ref(false);
 const cartStore = useCartStore();
 const sneakerStore = useSneakerStore();
-const route = useRoute();
+
 (async() => {
     try {
-      const {data} = await axios.get('http://localhost:3000/')
+      let {data} = await axios.get('http://localhost:3000/')
+      data.result = data.result.map((item) => ({...item, doesAmountExceeds: false}))
       allSneakers.value = data.result
+      recalculateIfSneakerAmountIsExceeded(cartStore.shoppingCart)
     } catch(err) {
         //
     }
@@ -136,15 +139,40 @@ const handleQueryParams = async (filters) => {
                 cena: price?.cena
         }})
     }
-
 }
+
+const recalculateIfSneakerAmountIsExceeded = (state) => {
+    const grouped = [];
+    state.forEach((item) => {
+        const matchingItem = grouped.find((sneaker) => sneaker.id === item.ID_PATIKA);
+        if (matchingItem) {
+            matchingItem.foundedAmount += 1;
+        } else {
+            grouped.push({id: item.ID_PATIKA, foundedAmount: 1, originalAmount: item.kolicina})
+        }
+    })
+    for (let item of grouped) {
+        const matchingSneaker = allSneakers.value.find((sneaker) => sneaker.ID_PATIKA === item.id)
+        if(item.foundedAmount === item.originalAmount) {
+            matchingSneaker.doesAmountExceeds = true
+        } else {
+            matchingSneaker.doesAmountExceeds = false
+        }
+    }
+}
+
+watch(() => props.allSneakers, (newSneakers) => allSneakers.value = newSneakers)
+
+cartStore.$subscribe((mutation, state) => {
+    recalculateIfSneakerAmountIsExceeded(state.shoppingCart)
+})
 </script>
 <style>
-.hover:hover {
-    cursor: pointer;
-}
 .card-container {
     width: calc(33.33333% - 1.5rem);
+}
+.card-container:hover {
+    cursor: pointer;
 }
 .img-card {
     max-width: 100%;

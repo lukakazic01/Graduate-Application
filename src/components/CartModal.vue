@@ -9,10 +9,10 @@
                 <div class="modal-body" v-if="cartStore.shoppingCart.length > 0">
                     <template v-for="item in cartStore.shoppingCart">
                         <div class="d-flex flex-row justify-content-center align-items-center">
-                            <p class="col-3 text-center">{{item.ID_PATIKA}}</p>
                             <p class="col-3 text-center">{{item.BREND}}</p>
                             <p class="col-3 text-center">{{item.MODEL}}</p>
                             <p class="col-3 text-center">{{item._CENA}}</p>
+                            <p class="col-3 text-center"><button type="button" class="btn-close" @click="deleteSneakers(item)"></button></p>
                         </div>
                     </template>
                 </div>
@@ -21,7 +21,12 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @click="closeModal()">Zatvori</button>
-                    <button type="button" class="btn btn-primary" @click="buySneakers()">Kupi za {{sumOfAllPrizes()}} RSD</button>
+                    <button type="button"
+                            class="btn btn-primary"
+                            @click="buySneakers()"
+                            :disabled="cartStore.shoppingCart.length === 0">
+                            Kupi za {{sumOfAllPrizes()}} RSD
+                    </button>
                 </div>
             </div>
         </div>
@@ -32,6 +37,7 @@
 <script setup>
 import {useCartStore} from "../../store/cart";
 import {useToast} from "vue-toast-notification";
+import axios from "axios";
 
 const props = defineProps({isModalOpened: Boolean})
 const emit = defineEmits(['closeModal', 'addNewSneakers']);
@@ -49,12 +55,22 @@ const sumOfAllPrizes = () => {
     return sum
 }
 
-const buySneakers = () => {
-    cartStore.buySneakers();
-    emit('closeModal', false);
-    toast$.success("Uspesno ste kupili patike", {
-        position: "bottom"
-    })
+const buySneakers = async () => {
+    try {
+        const { data } = await axios.post("http://localhost:3000/buy", {items: cartStore.shoppingCart})
+        cartStore.setDeletingSneakers();
+        emit('closeModal', false);
+        emit('addNewSneakers', data)
+        toast$.success("Uspesno ste kupili patike", {
+            position: "bottom"
+        })
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+const deleteSneakers = (sneaker) => {
+    cartStore.deleteSelectedSneakers(sneaker)
 }
 </script>
 

@@ -29,15 +29,18 @@
 import axios from "axios";
 import {useSneakerStore} from "../../store/sneaker";
 import {ref} from "vue";
+import {useCartStore} from "../../store/cart";
 
 const props = defineProps({ isDeleteSneakersModalOpened: Boolean })
 const emit = defineEmits(['closeModal', 'updateSneakers'])
 const sneakerStore = useSneakerStore();
 const novaKolicina = ref(null);
+const cartStore = useCartStore()
 const deleteSneakers = async () => {
     try{
         const id = sneakerStore.sneakerToBeDeleted.ID_PATIKA
         const {data} = await axios.delete('http://localhost:3000/delete', {params: {id, novaKolicina: novaKolicina.value}})
+        cartStore.setDeletingSneakers();
         emit("updateSneakers", data)
         emit("closeModal")
         novaKolicina.value = null;

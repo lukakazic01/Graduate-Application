@@ -118,7 +118,7 @@ app.delete('/delete', (req, res) => {
 
 app.get('/sneaker', (req,res) => {
     const {id} = req.query
-    pool.query('select * from patike where id_patike = ?', [id], (err, result) => {
+    pool.query('select * from patike where ID_PATIKA = ?', [id], (err, result) => {
         res.send(result)
     })
 })
@@ -218,12 +218,29 @@ app.post('/updateAmount', (req, res) => {
 
 app.post('/buy', async (req, res) => {
     const { items } = req.body
-    for (let item of items) {
-         await pool.awaitQuery('update patike set kolicina = kolicina - 1 where ID_PATIKA = ?', [item.ID_PATIKA], (err, result) => {
-            if (err) {
-                res.status(406, err.message);
-            }
-        })
+    const grouped = []
+    items.forEach((item) => {
+        const matchingItem = grouped.find((sneaker) => sneaker.id === item.ID_PATIKA);
+        if (matchingItem) {
+            matchingItem.foundedAmount += 1;
+        } else {
+            grouped.push({id: item.ID_PATIKA, foundedAmount: 1, originalAmount: item.kolicina})
+        }
+    })
+    for (let item of grouped) {
+        if (item.foundedAmount === item.originalAmount) {
+            pool.query('delete from patike where ID_PATIKA = ?', [item.id], (err, result) =>{
+                if(err) {
+                    res.status(500).send('Not deleted')
+                }
+            })
+        } else {
+            await pool.awaitQuery('update patike set kolicina = kolicina - ? where ID_PATIKA = ?', [item.foundedAmount, item.id], (err, result) => {
+                if (err) {
+                    res.status(406, err.message);
+                }
+            })
+        }
     }
     pool.query('select * from patike', (err, result) => {
         res.send(result)
