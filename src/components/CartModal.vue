@@ -38,10 +38,12 @@
 import {useCartStore} from "../../store/cart";
 import {useToast} from "vue-toast-notification";
 import axios from "axios";
+import {useUserStore} from "../../store/user";
 
 const props = defineProps({isModalOpened: Boolean})
 const emit = defineEmits(['closeModal', 'addNewSneakers']);
 const cartStore = useCartStore();
+const userStore = useUserStore();
 const toast$ = useToast();
 const closeModal = () => {
     emit('closeModal', false);
@@ -57,7 +59,7 @@ const sumOfAllPrizes = () => {
 
 const buySneakers = async () => {
     try {
-        const { data } = await axios.post("http://localhost:3000/buy", {items: cartStore.shoppingCart})
+        const { data } = await axios.post("http://localhost:3000/buy", {items: cartStore.shoppingCart, username: userStore.username})
         cartStore.setDeletingSneakers();
         emit('closeModal', false);
         emit('addNewSneakers', data)

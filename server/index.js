@@ -217,29 +217,58 @@ app.post('/updateAmount', (req, res) => {
 })
 
 app.post('/buy', async (req, res) => {
-    const { items } = req.body
+    const { items, username } = req.body
     const grouped = []
+    const user = await pool.awaitQuery('select ID_KORISNIK from korisnik where email = ?', [username]);
     items.forEach((item) => {
         const matchingItem = grouped.find((sneaker) => sneaker.id === item.ID_PATIKA);
         if (matchingItem) {
             matchingItem.foundedAmount += 1;
         } else {
-            grouped.push({id: item.ID_PATIKA, foundedAmount: 1, originalAmount: item.kolicina})
+            grouped.push(
+                {
+                    id: item.ID_PATIKA,
+                    foundedAmount: 1,
+                    originalAmount: item.kolicina,
+                    brojPatika: item.BROJ_PATIKA,
+                    model: item.MODEL,
+                    brend: item.BREND,
+                    cena: item._CENA,
+                    slika: item.slika
+                }
+            )
         }
     })
     for (let item of grouped) {
         if (item.foundedAmount === item.originalAmount) {
-            pool.query('delete from patike where ID_PATIKA = ?', [item.id], (err, result) =>{
-                if(err) {
-                    res.status(500).send('Not deleted')
+            pool.query('delete from patike where ID_PATIKA = ?', [item.id], (err, result) => {
+                if (err) {
+                    return res.status(500).send('Not deleted')
                 }
             })
         } else {
             await pool.awaitQuery('update patike set kolicina = kolicina - ? where ID_PATIKA = ?', [item.foundedAmount, item.id], (err, result) => {
                 if (err) {
-                    res.status(406, err.message);
+                    return res.status(406, err.message);
                 }
             })
+        }
+
+        //inserting into bought sneakers table
+        const sneaker = await pool.awaitQuery('select * from kupljene_patike where id_kupljenih_patika = ? and id_korisnik = ?', [item.id, user[0].ID_KORISNIK])
+        if (sneaker.length > 0) {
+            pool.query('update kupljene_patike set kolicina = kolicina + ? where id_kupljenih_patika = ?', [item.foundedAmount, item.id], (err) => {
+                if (err) {
+                    return res.status(406).send(err.message);
+                }
+            })
+        } else {
+            pool.query('insert into kupljene_patike values(?, ?, ?, ?, ?, ?, ?, ?)', [item.id, user[0].ID_KORISNIK, item.brojPatika, item.model, item.brend, item.cena, item.slika, item.foundedAmount],
+                (err, result) => {
+                    if (err) {
+                        return res.status(406).send(err.message);
+                    }
+                })
         }
     }
     pool.query('select * from patike', (err, result) => {

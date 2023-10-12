@@ -143,6 +143,12 @@ const handleQueryParams = async (filters) => {
 
 const recalculateIfSneakerAmountIsExceeded = (state) => {
     const grouped = [];
+    if (!state.length) {
+        allSneakers.value.forEach((item) => {
+            item.doesAmountExceeds = false
+        })
+        return;
+    }
     state.forEach((item) => {
         const matchingItem = grouped.find((sneaker) => sneaker.id === item.ID_PATIKA);
         if (matchingItem) {
