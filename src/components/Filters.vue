@@ -1,20 +1,28 @@
 <template>
     <div class="text-center d-flex justify-content-center flex-column">
-        <div class="p-2 d-flex align-items-center">
-            <label for="nike" class="h5 m-0 col-11 d-flex justify-content-start">Select Nike</label>
-            <input class="form-check-input col-1 h2" @change="updateFilters" type="checkbox" id="nike" value="nike" v-model="brands.brands">
+        <div class="py-2 d-flex align-items-center">
+            <label for="nike" class="h5 m-0 col-10 d-flex justify-content-start">Select Nike</label>
+            <div class="col-2 d-flex justify-content-end">
+                <input class="form-check-input h2" @change="updateFilters" type="checkbox" id="nike" value="nike" v-model="brands.brands">
+            </div>
         </div>
-        <div class="p-2 d-flex align-items-center">
-            <label for="adidas" class="h5 m-0 col-11 d-flex justify-content-start">Select Adidas</label>
-            <input class="form-check-input col-1 h2" @change="updateFilters" type="checkbox" id="adidas" value="adidas" v-model="brands.brands">
+        <div class="py-2 d-flex align-items-center">
+            <label for="adidas" class="h5 m-0 col-10 d-flex justify-content-start">Select Adidas</label>
+            <div class="d-flex col-2 justify-content-end">
+                <input class="form-check-input h2" @change="updateFilters" type="checkbox" id="adidas" value="adidas" v-model="brands.brands">
+            </div>
         </div>
-        <div class="p-2 d-flex align-items-center">
-            <label for="puma" class="h5 m-0 col-11 d-flex justify-content-start">Select Puma</label>
-            <input class="form-check-input col-1 h2" @change="updateFilters" type="checkbox" id="puma" value="puma" v-model="brands.brands">
+        <div class="py-2 d-flex align-items-center">
+            <label for="puma" class="h5 m-0 col-10 d-flex justify-content-start">Select Puma</label>
+            <div class="d-flex col-2 justify-content-end">
+                <input class="form-check-input h2" @change="updateFilters" type="checkbox" id="puma" value="puma" v-model="brands.brands">
+            </div>
         </div>
-        <div class="p-2 d-flex align-items-center">
-            <label for="diadora" class="h5 m-0 col-11 d-flex justify-content-start">Select Diadora</label>
-            <input class="form-check-input col-1 h2" @change="updateFilters" type="checkbox" id="diadora" value="diadora" v-model="brands.brands">
+        <div class="py-2 d-flex align-items-center">
+            <label for="diadora" class="h5 m-0 col-10 d-flex justify-content-start">Select Diadora</label>
+            <div class="col-2 d-flex justify-content-end">
+                <input class="form-check-input h2" @change="updateFilters" type="checkbox" id="diadora" value="diadora" v-model="brands.brands">
+            </div>
         </div>
     </div>
     <div class="text-center d-flex flex-column align-items-center mt-4">

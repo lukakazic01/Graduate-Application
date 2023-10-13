@@ -5,9 +5,9 @@
   <div class="d-flex justify-content-center mt-4">
     <button class="btn btn-primary btn-add-sneakers" @click="openModal()">Dodaj nove patike</button>
   </div>
-  <div class="row mt-4 mw-100 ps-5">
+  <div class="row mt-4 mw-100 ps-5 mb-4">
      <div class="col-3 filter-wrapper text-center">
-         <p class="h2">Filters</p>
+         <p class="h2 mt-2">Filters</p>
          <Filters @filters="handleFilters"/>
      </div>
      <div class="col-9">
@@ -211,6 +211,7 @@ cartStore.$subscribe((mutation, state) => {
 }
 .filter-wrapper {
     border: 1px solid rgba(220,220,220);
+    border-radius: 4px;
 }
 .btn-text {
     border-radius: 2px;

@@ -4,7 +4,7 @@ import RegisterView from "@/views/RegisterView.vue";
 import LoginView from "@/views/LoginView.vue";
 import SneakerView from "@/views/SneakerView.vue";
 import QAView from "@/views/Q&AView.vue";
-import StockView from "@/views/StockView.vue";
+import BoughtSneakersView from "@/views/BoughtSneakersView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,9 +36,9 @@ const router = createRouter({
       component: QAView
     },
     {
-      path: '/stock',
-      name: 'stock',
-      component: StockView
+      path: '/bought',
+      name: 'bought',
+      component: BoughtSneakersView
     }
   ]
 })
