@@ -123,11 +123,14 @@ app.get('/sneaker', (req,res) => {
     })
 })
 
-app.post('/addSneakers', (req, res) => {
-    const { cena, model, brend, brojPatika, name, buffer, kolicina } = req.body;
-    const modifiedBuffer = buffer.split(';base64,').pop()
-    const outputPath = path.join(__dirname, '../public', 'resized_' + name);
-    const imageBuffer = Buffer.from(modifiedBuffer, "base64")
+app.post('/addSneakers', async (req, res) => {
+    const { cena, model, brend, brojPatika, nameOfImage, buffer, kolicina } = req.body;
+    const sneaker = await pool.awaitQuery('select * from patike where MODEL = ? and BROJ_PATIKA = ? and BREND = ?', [model, brojPatika, brend]);
+    console.log(sneaker)
+    if (sneaker.length) return res.status(406).send("We already have those snekaers");
+    const withoutBase64 = buffer.split(';base64,').pop()
+    const outputPath = path.join(__dirname, '../public', 'resized_' + nameOfImage);
+    const imageBuffer = Buffer.from(withoutBase64, "base64")
     sharp(imageBuffer)
         .resize(500, 281, {
             withoutEnlargement: true
@@ -136,7 +139,7 @@ app.post('/addSneakers', (req, res) => {
             if (err) {
                 return res.status(406).send(err.message);
             } else {
-                const modifiedFilename = `http://localhost:3000/images/resized_${name}`;
+                const modifiedFilename = `http://localhost:3000/images/resized_${nameOfImage}`;
                 pool.query('insert into patike values(default, ?, ?, ?, ?, ?, ?)', [brojPatika, model, brend, cena, modifiedFilename, kolicina], (err, result) => {
                     if (err) {
                         res.status(406).send(err.message);
@@ -255,15 +258,15 @@ app.post('/buy', async (req, res) => {
         }
 
         //inserting into bought sneakers table
-        const sneaker = await pool.awaitQuery('select * from kupljene_patike where id_kupljenih_patika = ? and id_korisnik = ?', [item.id, user[0].ID_KORISNIK])
-        if (sneaker.length > 0) {
-            pool.query('update kupljene_patike set kolicina = kolicina + ? where id_kupljenih_patika = ?', [item.foundedAmount, item.id], (err) => {
+        const sneaker = await pool.awaitQuery('select * from kupljene_patike where model = ? and id_korisnik = ? and broj_patika = ?', [item.model, user[0].ID_KORISNIK, item.brojPatika])
+        if (sneaker.length > 0 && item.brojPatika === sneaker[0]?.broj_patika) {
+            pool.query('update kupljene_patike set kolicina = kolicina + ? where id_korisnik = ? and model = ? and broj_patika = ?', [item.foundedAmount, user[0].ID_KORISNIK, item.model, item.brojPatika], (err) => {
                 if (err) {
                     return res.status(406).send(err.message);
                 }
             })
         } else {
-            pool.query('insert into kupljene_patike values(?, ?, ?, ?, ?, ?, ?, ?)', [item.id, user[0].ID_KORISNIK, item.brojPatika, item.model, item.brend, item.cena, item.slika, item.foundedAmount],
+            pool.query('insert into kupljene_patike values(default, ?, ?, ?, ?, ?, ?, ?)', [user[0].ID_KORISNIK, item.brojPatika, item.model, item.brend, item.cena, item.slika, item.foundedAmount],
                 (err, result) => {
                     if (err) {
                         return res.status(406).send(err.message);
@@ -272,6 +275,12 @@ app.post('/buy', async (req, res) => {
         }
     }
     pool.query('select * from patike', (err, result) => {
+        res.send(result)
+    })
+})
+
+app.get('/boughtSneakers', (req, res) => {
+    pool.query('select model, brend, sum(cena * kolicina) as ukupnoZaradjeno, slika, sum(kolicina) as ukupnoProdato from kupljene_patike group by model', (err, result) => {
         res.send(result)
     })
 })

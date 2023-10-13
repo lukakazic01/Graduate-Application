@@ -60,14 +60,14 @@ const closeModal = () => {
 
 const saveSneakers = async () => {
     try{
-        const { name, buffer } = await handleFile()
+        const { nameOfImage, buffer } = await handleFile()
         const {data} = await axios.post('http://localhost:3000/addSneakers', {
             cena: cena.value,
             brojPatika: brojPatika.value,
             model: model.value,
             brend: brend.value,
-            buffer: buffer,
-            name: name,
+            buffer,
+            nameOfImage,
             kolicina: kolicina.value
         })
         emit('addNewSneakers', data)
@@ -88,7 +88,7 @@ const handleFile = () => {
         reader.readAsDataURL(image.value.files[0]);
         reader.onload = () => {
             const data = {
-                name: image.value.files[0].name,
+                nameOfImage: image.value.files[0].name,
                 buffer: reader.result
             }
             resolve(data)
