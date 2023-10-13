@@ -220,7 +220,7 @@ cartStore.$subscribe((mutation, state) => {
     border-radius: 2px;
 }
 .card-description {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 @media (max-width: 1200px) {
     .btn-text {
