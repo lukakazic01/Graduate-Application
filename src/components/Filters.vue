@@ -1,26 +1,26 @@
 <template>
-    <div class="text-center d-flex justify-content-center">
-        <div class="p-2">
-            <label for="nike">Nike</label>
-            <input class="form-check-input" @change="updateFilters" type="checkbox" id="nike" value="nike" v-model="brands.brands">
+    <div class="text-center d-flex justify-content-center flex-column">
+        <div class="p-2 d-flex align-items-center">
+            <label for="nike" class="h5 m-0 col-11 d-flex justify-content-start">Select Nike</label>
+            <input class="form-check-input col-1 h2" @change="updateFilters" type="checkbox" id="nike" value="nike" v-model="brands.brands">
         </div>
-        <div class="p-2">
-            <label for="adidas">Adidas</label>
-            <input class="form-check-input" @change="updateFilters" type="checkbox" id="adidas" value="adidas" v-model="brands.brands">
+        <div class="p-2 d-flex align-items-center">
+            <label for="adidas" class="h5 m-0 col-11 d-flex justify-content-start">Select Adidas</label>
+            <input class="form-check-input col-1 h2" @change="updateFilters" type="checkbox" id="adidas" value="adidas" v-model="brands.brands">
         </div>
-        <div class="p-2">
-            <label for="puma">puma</label>
-            <input class="form-check-input" @change="updateFilters" type="checkbox" id="puma" value="puma" v-model="brands.brands">
+        <div class="p-2 d-flex align-items-center">
+            <label for="puma" class="h5 m-0 col-11 d-flex justify-content-start">Select Puma</label>
+            <input class="form-check-input col-1 h2" @change="updateFilters" type="checkbox" id="puma" value="puma" v-model="brands.brands">
         </div>
-        <div class="p-2">
-            <label for="diadora">Diadora</label>
-            <input class="form-check-input" @change="updateFilters" type="checkbox" id="diadora" value="diadora" v-model="brands.brands">
+        <div class="p-2 d-flex align-items-center">
+            <label for="diadora" class="h5 m-0 col-11 d-flex justify-content-start">Select Diadora</label>
+            <input class="form-check-input col-1 h2" @change="updateFilters" type="checkbox" id="diadora" value="diadora" v-model="brands.brands">
         </div>
     </div>
-    <div class="text-center d-flex flex-column align-items-center">
-        <label for="customRange2" class="form-label">Cena</label>
-        <input type="range" class="form-range w-50" @change="handlePrice" min="100" max="10000" id="customRange2" v-model="priceValue">
-        <p>Od 100 do {{priceValue}}</p>
+    <div class="text-center d-flex flex-column align-items-center mt-4">
+        <label for="customRange2" class="form-label h4">Price</label>
+        <input type="range" class="form-range w-100 p-4" @change="handlePrice" min="100" max="10000" id="customRange2" v-model="priceValue">
+        <p class="fw-semibold">Od 100 do {{priceValue}}</p>
     </div>
 </template>
 

@@ -1,28 +1,37 @@
 <template>
   <div class="d-flex justify-content-center mt-5">
-    <input type="text" placeholder="pretrazi patike" @input="getSearchedValues()" v-model="searchedValue">
-      <button class="btn btn-primary ms-5" @click="openModal()">Dodaj nove patike</button>
+    <input type="text" class="p-2 search-input w-50" placeholder="Pretrazi patike" @input="getSearchedValues()" v-model="searchedValue">
   </div>
-  <Filters @filters="handleFilters"/>
-  <div class="row">
-      <div class=" mt-4 d-flex w-100 flex-wrap gap-4 justify-content-center">
-          <div class="card hover card-container" v-for="sneaker in allSneakers" @click="showSneakersInDetail(sneaker.ID_PATIKA)">
-              <div class="card-wrapper card-img-top">
-                <img :src="sneaker.slika" class="img-card" alt="slika" />
-              </div>
-              <div class="card-body">
-                  <h5 class="card-title">{{sneaker.BREND}} {{sneaker.MODEL}}</h5>
-                  <p>Broj: {{sneaker.BROJ_PATIKA}}</p>
-                  <p>Cena: {{sneaker._CENA}} RSD</p>
-                  <p>Kolicina: {{sneaker.kolicina}}</p>
-                  <div class="mt-3">
-                    <button class="btn btn-success text-white me-3" @click.stop="addToCart(sneaker)" :disabled="sneaker.doesAmountExceeds">Dodaj u korpu</button>
-                    <button class="btn btn-success text-white me-3" @click.stop="openIncreaseSneakersAmountModal(sneaker)">Dodaj kolicinu</button>
-                    <button class="btn btn-danger text-white" @click.stop="openDeleteSneakersModal(sneaker)">Obrisi</button>
-                  </div>
-              </div>
-          </div>
-      </div>
+  <div class="d-flex justify-content-center mt-4">
+    <button class="btn btn-primary btn-add-sneakers" @click="openModal()">Dodaj nove patike</button>
+  </div>
+  <div class="row mt-4 mw-100 ps-5">
+     <div class="col-3 filter-wrapper text-center">
+         <p class="h2">Filters</p>
+         <Filters @filters="handleFilters"/>
+     </div>
+     <div class="col-9">
+         <div class="row">
+             <div class="d-flex w-100 flex-wrap gap-4 justify-content-center">
+                 <div class="card hover card-container" v-for="sneaker in allSneakers" @click="showSneakersInDetail(sneaker.ID_PATIKA)">
+                     <div class="card-wrapper card-img-top">
+                         <img :src="sneaker.slika" class="img-card card-img-top" alt="slika" />
+                     </div>
+                     <div class="card-body">
+                         <h3 class="card-title">{{sneaker.BREND}} {{sneaker.MODEL}}</h3>
+                         <p class="card-description"><span class="fw-semibold">Broj:</span> {{sneaker.BROJ_PATIKA}}</p>
+                         <p class="card-description"><span class="fw-semibold">Cena:</span> {{sneaker._CENA}} RSD</p>
+                         <p class="card-description"><span class="fw-semibold">Kolicina:</span> {{sneaker.kolicina}}</p>
+                         <div class="mt-3">
+                             <button class="btn btn-success text-white me-3 btn-text" @click.stop="addToCart(sneaker)" :disabled="sneaker.doesAmountExceeds">Dodaj u korpu</button>
+                             <button class="btn btn-success text-white me-3 btn-text" @click.stop="openIncreaseSneakersAmountModal(sneaker)">Dodaj kolicinu</button>
+                             <button class="btn btn-danger text-white btn-text" @click.stop="openDeleteSneakersModal(sneaker)">Obrisi</button>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
   </div>
   <AddSneakersModal :isAddSneakersModalOpened="isAddSneakersModalOpened"
           @close-modal="closeModal"
@@ -173,9 +182,10 @@ cartStore.$subscribe((mutation, state) => {
     recalculateIfSneakerAmountIsExceeded(state.shoppingCart)
 })
 </script>
+
 <style>
 .card-container {
-    width: calc(33.33333% - 1.5rem);
+    width: calc(50% - 1.5rem);
 }
 .card-container:hover {
     cursor: pointer;
@@ -189,5 +199,37 @@ cartStore.$subscribe((mutation, state) => {
     justify-content: center;
     align-items: center;
     background-color: rgba(0,0,0);
+}
+.search-input {
+    outline: none;
+    border-radius: 2px;
+    border: 2px solid rgb(220, 220, 220);
+}
+
+.search-input:focus {
+    border: 2px solid crimson
+}
+.filter-wrapper {
+    border: 1px solid rgba(220,220,220);
+}
+.btn-text {
+    border-radius: 2px;
+}
+.btn-add-sneakers {
+    border-radius: 2px;
+}
+.card-description {
+    font-size: 1.2rem;
+}
+@media (max-width: 1200px) {
+    .btn-text {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 1060px) {
+    .btn-text {
+        font-size: 0.6rem;
+    }
 }
 </style>
