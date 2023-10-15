@@ -14,6 +14,7 @@ Admin:
 - See how many pairs of sneakers are both and income from it
 <br />
 <br />
+
 User:
 - Can search for sneakers
 - Can ask questions on Q&A page
