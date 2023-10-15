@@ -6,18 +6,18 @@ If you want to start the application, <b>you will need to install</b> MySql Work
 <br />
 An app has 2 type of users, admin and ordinary, where the functionalities are:
 <br />
+<br />
 Admin: 
 - Add sneakers
 - Remove sneakers
 - Answer on ordinary users questions
 - See how many pairs of sneakers are both
+<br />
+<br />
 User:
 - Can search for sneakers
-<br />
 - Can filter out sneakers by their brand
-<br />
 - Can see detailed page about sneakers
-<br />
 - Can ask question on Q&A page 
 
 ## Project Setup
