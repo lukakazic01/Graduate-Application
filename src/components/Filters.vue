@@ -65,5 +65,7 @@ const handlePrice = () => {
 </script>
 
 <style scoped>
-
+input[type='checkbox'] {
+    cursor: pointer;
+}
 </style>
