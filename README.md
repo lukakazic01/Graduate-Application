@@ -7,15 +7,10 @@ If you want to start the application, <b>you will need to install</b> MySql Work
 An app has 2 type of users, admin and ordinary, where the functionalities are:
 <br />
 Admin: 
-</br />
 - Add sneakers
-<br />
 - Remove sneakers
-<br />
 - Answer on ordinary users questions
-  <br />
 - See how many pairs of sneakers are both
-<br />
 User:
 - Can search for sneakers
 <br />
