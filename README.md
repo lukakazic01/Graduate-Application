@@ -11,15 +11,17 @@ Admin:
 - Add sneakers
 - Remove sneakers
 - Answer on ordinary users questions
-- See how many pairs of sneakers are both
+- See how many pairs of sneakers are both and income from it
 <br />
 <br />
+
 User:
 - Can search for sneakers
-- Can filter out sneakers by their brand
-- Can see detailed page about sneakers
-- Can ask question on Q&A page 
-
+- Can ask questions on Q&A page
+- Can filter out sneakers based on brand and price
+- Can see more details about the specified sneakers
+- Can logout from account
+<br />
 ## Project Setup
 
 ```sh
