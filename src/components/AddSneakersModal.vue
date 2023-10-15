@@ -7,29 +7,29 @@
                     <button type="button" class="btn-close" @click="closeModal()"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row mb-3">
+                    <div class="row mb-3 align-items-center">
                         <label class="col-3">brend:</label>
-                        <input type="text" class="col-9" v-model="brend" name="brend"/>
+                        <input type="text" class="col-9 input" v-model="brend" name="brend"/>
                     </div>
-                    <div class="row mb-3">
+                    <div class="row mb-3 align-items-center">
                         <label class="col-3">cena:</label>
-                        <input type="text" class="col-9" v-model="cena" name="cena"/>
+                        <input type="text" class="col-9 input" v-model="cena" name="cena"/>
                     </div>
-                    <div class="row mb-3">
+                    <div class="row mb-3 align-items-center">
                         <label class="col-3">broj patika:</label>
-                        <input type="text" class="col-9" v-model="brojPatika" name="brojPatika"/>
+                        <input type="text" class="col-9 input" v-model="brojPatika" name="brojPatika"/>
                     </div>
-                    <div class="row mb-3">
+                    <div class="row mb-3 align-items-center">
                         <label class="col-3">model:</label>
-                        <input type="text" class="col-9" v-model="model" name="model"/>
+                        <input type="text" class="col-9 input" v-model="model" name="model"/>
                     </div>
-                    <div class="row mb-3">
+                    <div class="row mb-3 align-items-center">
                         <label class="col-3">slika:</label>
-                        <input type="file" class="col-9" name="image" ref="image" />
+                        <input type="file" class="col-9 p-0" name="image" ref="image" />
                     </div>
-                    <div class="row mb-3">
+                    <div class="row mb-3 align-items-center">
                         <label class="col-3">kolicina:</label>
-                        <input type="number" class="col-9" name="kolicina" min="1" v-model="kolicina"/>
+                        <input type="number" class="col-9 input" name="kolicina" min="1" v-model="kolicina"/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -101,5 +101,13 @@ const handleFile = () => {
 .modal-overriden {
     display: block;
     background: rgba(0,0,0, 0.5);
+}
+.input {
+    border: 2px solid rgb(220,220,220);
+    outline: none;
+    padding: 4px;
+}
+.input:focus {
+    border: 2px solid crimson;
 }
 </style>

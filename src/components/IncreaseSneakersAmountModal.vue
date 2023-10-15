@@ -29,12 +29,14 @@ import axios from "axios";
 import {useSneakerStore} from "../../store/sneaker";
 import {ref} from "vue";
 import {useCartStore} from "../../store/cart";
+import {useToast} from "vue-toast-notification";
 
 const props = defineProps({ isIncreaseSneakersAmountModalOpened: Boolean })
 const emit = defineEmits(['closeModal', 'updateSneakers'])
 const sneakerStore = useSneakerStore();
 const kolicinaZaDodati = ref(null);
 const cartStore = useCartStore()
+const $toast = useToast();
 const addAmount = async () => {
     try{
         const id = sneakerStore.sneakerToBeDeleted.ID_PATIKA
@@ -42,6 +44,9 @@ const addAmount = async () => {
         cartStore.setDeletingSneakers();
         emit("updateSneakers", data)
         emit("closeModal")
+        $toast.success('Successfully increased amount of sneakers', {
+            position: "bottom"
+        })
         kolicinaZaDodati.value = null;
     } catch(err) {
         console.log(err)

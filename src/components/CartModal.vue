@@ -25,7 +25,7 @@
                             class="btn btn-primary"
                             @click="buySneakers()"
                             :disabled="cartStore.shoppingCart.length === 0">
-                            Kupi za {{sumOfAllPrizes()}} RSD
+                            {{btnText}}
                     </button>
                 </div>
             </div>
@@ -39,12 +39,14 @@ import {useCartStore} from "../../store/cart";
 import {useToast} from "vue-toast-notification";
 import axios from "axios";
 import {useUserStore} from "../../store/user";
+import {computed} from "vue";
 
 const props = defineProps({isModalOpened: Boolean})
 const emit = defineEmits(['closeModal', 'addNewSneakers']);
 const cartStore = useCartStore();
 const userStore = useUserStore();
 const toast$ = useToast();
+const btnText = computed(() => (sumOfAllPrizes() ? `kupi za ${sumOfAllPrizes()} RSD` : `nema patika`))
 const closeModal = () => {
     emit('closeModal', false);
 }
