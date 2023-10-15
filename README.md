@@ -26,6 +26,7 @@ User:
 - Can see more details about the specified sneakers
 - Can logout from account
 <br />
+
 ## Project Setup
 
 ```sh
