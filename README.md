@@ -1,14 +1,31 @@
-# projekatIs
+# Graduate Application
 
-This template should help get you started developing with Vue 3 in Vite.
+The application i created is application that will be the my thesis for University.
+<br />
+If you want to start the application, <b>you will need to install</b> MySql Workbench and XAMPP Control Panel for starting the MySql server.
+<br />
+Both of users will need to register and login before entering the application, you cant visit Home page if you are not logged in.
+<br />
+Uppon logging in, user will get its jwt token which will expire in some period of time.
+<br />
+An app has 2 type of users, admin and ordinary, where the functionalities are:
+<br />
+<br />
+Admin: 
+- Add sneakers
+- Remove sneakers
+- Answer on ordinary users questions
+- See how many pairs of sneakers are both and income from it
+<br />
+<br />
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+User:
+- Can search for sneakers
+- Can ask questions on Q&A page
+- Can filter out sneakers based on brand and price
+- Can see more details about the specified sneakers
+- Can logout from account
+<br />
 
 ## Project Setup
 
