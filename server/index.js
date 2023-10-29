@@ -175,9 +175,7 @@ app.get('/filters', async (req, res) => {
             finalResult = finalResult.filter(brand => brand._CENA >= min && brand._CENA <= max);
         }
     }
-
-        res.send(finalResult)
-
+    res.send(finalResult)
 })
 
 app.post('/q&a', async (req, res) => {
