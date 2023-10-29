@@ -220,7 +220,7 @@ app.post('/updateAmount', (req, res) => {
 })
 
 app.post('/buy', async (req, res) => {
-    const { items, username } = req.body
+    const { items, username, date } = req.body
     const grouped = []
     const user = await pool.awaitQuery('select ID_KORISNIK from korisnik where email = ?', [username]);
     items.forEach((item) => {
@@ -258,7 +258,7 @@ app.post('/buy', async (req, res) => {
         }
 
         //inserting into bought sneakers table
-        const sneaker = await pool.awaitQuery('select * from kupljene_patike where model = ? and id_korisnik = ? and broj_patika = ?', [item.model, user[0].ID_KORISNIK, item.brojPatika])
+        const sneaker = await pool.awaitQuery('select * from kupljene_patike where model = ? and id_korisnik = ? and broj_patika = ? and datum = ?', [item.model, user[0].ID_KORISNIK, item.brojPatika, date])
         if (sneaker.length > 0 && item.brojPatika === sneaker[0]?.broj_patika) {
             pool.query('update kupljene_patike set kolicina = kolicina + ? where id_korisnik = ? and model = ? and broj_patika = ?', [item.foundedAmount, user[0].ID_KORISNIK, item.model, item.brojPatika], (err) => {
                 if (err) {
@@ -266,7 +266,7 @@ app.post('/buy', async (req, res) => {
                 }
             })
         } else {
-            pool.query('insert into kupljene_patike values(default, ?, ?, ?, ?, ?, ?, ?)', [user[0].ID_KORISNIK, item.brojPatika, item.model, item.brend, item.cena, item.slika, item.foundedAmount],
+            pool.query('insert into kupljene_patike values(default, ?, ?, ?, ?, ?, ?, ?, ?)', [user[0].ID_KORISNIK, item.brojPatika, item.model, item.brend, item.cena, item.slika, item.foundedAmount, date],
                 (err, result) => {
                     if (err) {
                         return res.status(406).send(err.message);
@@ -283,6 +283,21 @@ app.get('/boughtSneakers', (req, res) => {
     pool.query('select model, brend, sum(cena * kolicina) as ukupnoZaradjeno, slika, sum(kolicina) as ukupnoProdato from kupljene_patike group by model', (err, result) => {
         res.send(result)
     })
+})
+
+app.get('/boughtSneakersByUserAndDate', (req, res) => {
+    const { dateRange } = req.query;
+    if(!dateRange) {
+        pool.query('select * from ukupnoProdatihPoKorisniku', (err, result) => {
+            res.send(result)
+        })
+    } else {
+        const [fromDate, toDate] = dateRange.split('-');
+        pool.query('select kupljene_patike.*, korisnik.email from kupljene_patike JOIN korisnik ON korisnik.id_korisnik = kupljene_patike.id_korisnik where datum <= ? and datum >= ? order by datum', [toDate, fromDate], (err, result) => {
+            if(err) res.status(406).send(err.message);
+            else res.send(result)
+        })
+    }
 })
 
 app.listen(port, () => {

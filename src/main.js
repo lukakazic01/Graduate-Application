@@ -9,9 +9,12 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import jwtDecode from "jwt-decode";
 import {useUserStore} from "../store/user";
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 
 const app = createApp(App)
 app.use(VueCookies)
+app.component('VueDatePicker', VueDatePicker);
 app.use(createPinia())
 app.use(router)
 router.app = app

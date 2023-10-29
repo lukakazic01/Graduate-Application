@@ -61,7 +61,9 @@ const sumOfAllPrizes = () => {
 
 const buySneakers = async () => {
     try {
-        const { data } = await axios.post("http://localhost:3000/buy", {items: cartStore.shoppingCart, username: userStore.username})
+        const date = new Date();
+        const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+        const { data } = await axios.post("http://localhost:3000/buy", {items: cartStore.shoppingCart, username: userStore.username, date: formattedDate})
         cartStore.setDeletingSneakers();
         emit('closeModal', false);
         emit('addNewSneakers', data)
