@@ -1,9 +1,17 @@
 <template>
   <div class="d-flex justify-content-center mt-5">
-    <input type="text" class="p-2 search-input w-50" placeholder="Pretrazi patike" @input="getSearchedValues()" v-model="searchedValue">
+    <input type="text"
+           class="p-2 search-input w-50"
+           placeholder="Pretrazi patike"
+           @input="getSearchedValues()"
+           v-model="searchedValue">
   </div>
   <div class="d-flex justify-content-center mt-4">
-    <button class="btn btn-primary btn-add-sneakers" v-if="userStore.role === 'admin'" @click="openModal()">Dodaj nove patike</button>
+    <button class="btn btn-primary btn-add-sneakers"
+            v-if="userStore.role === 'admin'"
+            @click="openModal()">
+        Dodaj nove patike
+    </button>
   </div>
   <div class="row mt-4 mw-100 ps-5 mb-4">
      <div class="col-3 filter-wrapper text-center">
@@ -13,7 +21,9 @@
      <div class="col-9">
          <div class="row">
              <div class="d-flex w-100 flex-wrap gap-4 justify-content-center">
-                 <div class="card hover card-container" v-for="sneaker in allSneakers" @click="showSneakersInDetail(sneaker.ID_PATIKA)">
+                 <div class="card hover card-container"
+                      v-for="sneaker in allSneakers"
+                      @click="showSneakersInDetail(sneaker.ID_PATIKA)">
                      <div class="card-wrapper card-img-top">
                          <img :src="sneaker.slika" class="img-card card-img-top" alt="slika" />
                      </div>
@@ -23,9 +33,21 @@
                          <p class="card-description"><span class="fw-semibold">Cena:</span> {{sneaker._CENA}} RSD</p>
                          <p class="card-description"><span class="fw-semibold">Kolicina:</span> {{sneaker.kolicina}}</p>
                          <div class="mt-3">
-                             <button class="btn btn-success text-white me-3 btn-text" @click.stop="addToCart(sneaker)" :disabled="sneaker.doesAmountExceeds">Dodaj u korpu</button>
-                             <button class="btn btn-success text-white me-3 btn-text" v-if="userStore.role === 'admin'" @click.stop="openIncreaseSneakersAmountModal(sneaker)">Dodaj kolicinu</button>
-                             <button class="btn btn-danger text-white btn-text" v-if="userStore.role === 'admin'" @click.stop="openDeleteSneakersModal(sneaker)">Obrisi</button>
+                             <button class="btn btn-success text-white me-3 btn-text"
+                                     @click.stop="addToCart(sneaker)"
+                                     :disabled="sneaker.doesAmountExceeds">
+                                 Dodaj u korpu
+                             </button>
+                             <button class="btn btn-success text-white me-3 btn-text"
+                                     v-if="userStore.role === 'admin'"
+                                     @click.stop="openIncreaseSneakersAmountModal(sneaker)">
+                                 Dodaj kolicinu
+                             </button>
+                             <button class="btn btn-danger text-white btn-text"
+                                     v-if="userStore.role === 'admin'"
+                                     @click.stop="openDeleteSneakersModal(sneaker)">
+                                 Obrisi
+                             </button>
                          </div>
                      </div>
                  </div>
@@ -49,7 +71,6 @@ import {ref, watch} from "vue";
 import router from "@/router";
 import {useCartStore} from "../../store/cart";
 import Filters from "@/components/Filters.vue";
-import {useRoute} from "vue-router";
 import AddSneakersModal from "@/components/AddSneakersModal.vue";
 import DeleteSneakersModal from "@/components/DeleteSneakersModal.vue";
 import {useSneakerStore} from "../../store/sneaker";
